@@ -13,6 +13,15 @@ pygame.mixer.init()
 screen=pygame.display.set_mode((width,height))
 pygame.display.set_caption("meteoros")
 clock= pygame.time.Clock()
+#dibujar texto
+#surface=donde dibujar el texto
+
+def dibujarTexto(surface,text,size,x,y):
+    font = pygame.font.SysFont("serif",size)
+    text_surface= font.render(text,True,white)
+    text_rect=text_surface.get_rect()
+    text_rect.midtop=(x,y)
+    surface.blit(text_surface,text_rect)
 
 #clase para la nave espacial
 class Nave(pygame.sprite.Sprite):
@@ -89,14 +98,16 @@ class Bala(pygame.sprite.Sprite):
         self.rect.centerx=x
         self.speedy=-10
     def update(self):
+        #la bala sube automaticamente 
         self.rect.y+=self.speedy
+        #elimina las instacias/balas para que no ocupe espacio de memoria
         if self.rect.bottom<0:
             self.kill()
     
 
 
 #cargar imagen de fondo
-#background=pygame.transform.scale((pygame.image.load("img/background.png").convert()),(100,100))      
+#background=pygame.image.load("img/background.png") 
 
 
 all_sprites=pygame.sprite.Group()
@@ -110,9 +121,10 @@ for i in range(8):
     all_sprites.add(meteoro)
     meteoro_lista.add(meteoro)
     
-
-runnig=True
-while runnig:
+score=0
+vida=3
+running=True
+while running:
     clock.tick(60)
     for event in pygame.event.get(): 
         if event.type==pygame.QUIT:
@@ -124,19 +136,28 @@ while runnig:
     all_sprites.update()
     #colisiones-meteoro-laser
     choque=pygame.sprite.groupcollide(meteoro_lista,bullets,True,True)
+    #vuelve a caer los meteoros aunque se destruyan
     for choq in choque:
+        score+=1
         meteoro=Meteorito()
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
     #colisiones-jugador-meteoro
-    choque= pygame.sprite.spritecollide(jugador,meteoro_lista,False)
+    choque= pygame.sprite.spritecollide(jugador,meteoro_lista,True)
     if choque:
-        runnig=True
+        running=True
+        vida-=1
+        if vida==0:
+            running=False
         
-    #screen.blit(background,[100,100])
+     
+    #screen.blit(background,[600,800])
     
     screen.fill(black)
     all_sprites.draw(screen)
+    #marcador
+    dibujarTexto(screen,str(score),25,width-500,10)
+    dibujarTexto(screen,str(vida),25,width//2,10)
     pygame.display.flip()
 pygame.quit()
 
