@@ -6,6 +6,7 @@ width=800
 height=600
 black=(0,0,0)
 white=(255,255,255)
+green=(0,255,0)
 blue = (0, 0, 255)
 pygame.init()
 pygame.mixer.init()
@@ -13,15 +14,24 @@ pygame.mixer.init()
 screen=pygame.display.set_mode((width,height))
 pygame.display.set_caption("meteoros")
 clock= pygame.time.Clock()
-#dibujar texto
-#surface=donde dibujar el texto
 
+#surface=donde dibujar el texto
 def dibujarTexto(surface,text,size,x,y):
     font = pygame.font.SysFont("serif",size)
     text_surface= font.render(text,True,white)
     text_rect=text_surface.get_rect()
     text_rect.midtop=(x,y)
     surface.blit(text_surface,text_rect)
+
+def dibujarBarraVida(surface,x,y,porcentaje):
+    barra_lenght= 100
+    barra_height= 10
+    fill_lenght=(porcentaje/100)*barra_lenght
+    border= pygame.Rect(x,y,barra_lenght,barra_height)
+    fill= pygame.Rect(x,y,fill_lenght,barra_height)
+    pygame.draw.rect(surface,green,fill)
+    pygame.draw.rect(surface,white,border,1)
+
 
 #clase para la nave espacial
 class Nave(pygame.sprite.Sprite):
@@ -33,6 +43,7 @@ class Nave(pygame.sprite.Sprite):
         self.rect.centerx = width//2
         self.rect.bottom=height-10
         self.speed_x=0
+        self.vida=100
         #self.listaDisparo=[]
         #self.Vida=True
     def update(self):
@@ -61,6 +72,7 @@ class Nave(pygame.sprite.Sprite):
         bullet = Bala(self.rect.centerx,self.rect.top)
         all_sprites.add(bullet)
         bullets.add(bullet)
+        #laser_sound.play()
         
     
 
@@ -68,6 +80,8 @@ class Nave(pygame.sprite.Sprite):
 class Meteorito(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        #meteoros de distinto tamaño aleatoriamente
+        #self.image=random.choice(meteoro_imagenes)
         self.image=pygame.image.load("img/asteroids.png").convert()
         self.image.set_colorkey(black)
         self.rect=self.image.get_rect()
@@ -109,6 +123,17 @@ class Bala(pygame.sprite.Sprite):
 #cargar imagen de fondo
 #background=pygame.image.load("img/background.png") 
 
+# meteoro_imagenes=[]
+# meteoro_lista=["img/asteroids.png","img/asteroidPeque2.png"]
+# #almacenando todos los meteoros a la lista de meteoros
+# for img in meteoro_lista:
+#     meteoro_imagenes.append(pygame.image.load(img).convert())
+
+#cargando sonidos 
+laser_sound=pygame.mixer.Sound("sound/laser.ogg")
+explosion_sound=pygame.mixer.Sound("sound/explosion.wav")
+pygame.mixer.music.load("sound/soundPlayer.ogg")
+pygame.mixer.music.set_volume(0.2)
 
 all_sprites=pygame.sprite.Group()
 meteoro_lista=pygame.sprite.Group()
@@ -122,7 +147,7 @@ for i in range(8):
     meteoro_lista.add(meteoro)
     
 score=0
-vida=3
+#pygame.mixer.music.play(loops=-1)
 running=True
 while running:
     clock.tick(60)
@@ -139,15 +164,17 @@ while running:
     #vuelve a caer los meteoros aunque se destruyan
     for choq in choque:
         score+=1
+        #explosion_sound.play()
         meteoro=Meteorito()
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
     #colisiones-jugador-meteoro
     choque= pygame.sprite.spritecollide(jugador,meteoro_lista,True)
     if choque:
+        #explosion_sound.play() 
         running=True
-        vida-=1
-        if vida==0:
+        jugador.vida-=33.9
+        if jugador.vida<0:
             running=False
         
      
@@ -156,8 +183,8 @@ while running:
     screen.fill(black)
     all_sprites.draw(screen)
     #marcador
-    dibujarTexto(screen,str(score),25,width-500,10)
-    dibujarTexto(screen,str(vida),25,width//2,10)
+    dibujarTexto(screen,str(score),25,width//2,10)
+    dibujarBarraVida(screen,5,5,jugador.vida)
     pygame.display.flip()
 pygame.quit()
 
