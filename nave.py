@@ -50,7 +50,6 @@ class Nave(pygame.sprite.Sprite):
             self.rect.bottom=height
     def disparar(self):
         bullet = Bala(self.rect.centerx,self.rect.top)
-        print("bala:",self.rect.centerx," ",self.rect.top)
         all_sprites.add(bullet)
         bullets.add(bullet)
         
@@ -86,6 +85,7 @@ class Bala(pygame.sprite.Sprite):
         #remover el fondo
         self.image.set_colorkey(black)
         self.rect=self.image.get_rect()
+        self.rect.y=y
         self.rect.centerx=x
         self.speedy=-10
     def update(self):
@@ -129,9 +129,9 @@ while runnig:
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
     #colisiones-jugador-meteoro
-    choque= pygame.sprite.spritecollide(jugador,meteoro_lista,True)
+    choque= pygame.sprite.spritecollide(jugador,meteoro_lista,False)
     if choque:
-        runnig=False
+        runnig=True
         
     #screen.blit(background,[100,100])
     
