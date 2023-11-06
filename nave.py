@@ -72,7 +72,7 @@ class Nave(pygame.sprite.Sprite):
         bullet = Bala(self.rect.centerx,self.rect.top)
         all_sprites.add(bullet)
         bullets.add(bullet)
-        #laser_sound.play()
+        laser_sound.play()
         
     
 
@@ -117,6 +117,52 @@ class Bala(pygame.sprite.Sprite):
         #elimina las instacias/balas para que no ocupe espacio de memoria
         if self.rect.bottom<0:
             self.kill()
+
+
+class ExplosionBala(pygame.sprite.Sprite):
+    def __init__(self,center):
+        super().__init__()
+        self.image = explosion_anim[0]
+        self.rect=self.image.get_rect()
+        self.rect.center = center
+        self.frame=0
+        self.last_update=pygame.time.get_ticks() #cuanto tiempo transcurrio cuando se inicio el juego
+        self.frame_rate=50 #velocidad de la explosion
+    def update(self):
+        now=pygame.time.get_ticks()
+        if now-self.last_update > self.frame_rate:
+            self.last_update=now
+            self.frame+=1
+            if self.frame == len(explosion_anim):
+                self.kill()
+            else:
+                center=self.rect.center
+                self.image=explosion_anim[self.frame]
+                self.rect= self.image.get_rect()
+                self.rect.center=center
+
+class ExplosionNave(pygame.sprite.Sprite):
+    def __init__(self,center):
+        super().__init__()
+        self.image = explosion_anim2[0]
+        self.rect=self.image.get_rect()
+        self.rect.center = center
+        self.frame=0
+        self.last_update=pygame.time.get_ticks() #cuanto tiempo transcurrio cuando se inicio el juego
+        self.frame_rate=50 #velocidad de la explosion
+    def update(self):
+        now=pygame.time.get_ticks()
+        if now-self.last_update > self.frame_rate:
+            self.last_update=now
+            self.frame+=1
+            if self.frame == len(explosion_anim2):
+                self.kill()
+            else:
+                center=self.rect.center
+                self.image=explosion_anim2[self.frame]
+                self.rect= self.image.get_rect()
+                self.rect.center=center
+
     
 
 
@@ -128,6 +174,23 @@ class Bala(pygame.sprite.Sprite):
 # #almacenando todos los meteoros a la lista de meteoros
 # for img in meteoro_lista:
 #     meteoro_imagenes.append(pygame.image.load(img).convert())
+
+
+#cargar img explosiones
+#lista de explosiones
+explosion_anim=[]
+for i in range(9):
+    file="img/regularExplosion0{}.png".format(i)
+    img=pygame.image.load(file).convert()
+    img.set_colorkey(black)
+    img_scale=pygame.transform.scale(img,(70,70))
+    explosion_anim.append(img_scale)
+
+explosion_anim2=[]
+img=pygame.image.load("img/regularExplosion03.png").convert()
+img.set_colorkey(black)
+img_scale=pygame.transform.scale(img,(70,70))
+explosion_anim2.append(img_scale)
 
 #cargando sonidos 
 laser_sound=pygame.mixer.Sound("sound/laser.ogg")
@@ -147,7 +210,7 @@ for i in range(8):
     meteoro_lista.add(meteoro)
     
 score=0
-#pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.play(loops=-1)
 running=True
 while running:
     clock.tick(60)
@@ -160,22 +223,35 @@ while running:
 
     all_sprites.update()
     #colisiones-meteoro-laser
-    choque=pygame.sprite.groupcollide(meteoro_lista,bullets,True,True)
+    hits=pygame.sprite.groupcollide(meteoro_lista,bullets,True,True)
     #vuelve a caer los meteoros aunque se destruyan
-    for choq in choque:
+    for hit in hits:
         score+=1
-        #explosion_sound.play()
+        explosion_sound.play()
+        explosion=ExplosionBala(hit.rect.center)
+        all_sprites.add(explosion)
         meteoro=Meteorito()
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
     #colisiones-jugador-meteoro
-    choque= pygame.sprite.spritecollide(jugador,meteoro_lista,True)
-    if choque:
-        #explosion_sound.play() 
-        running=True
+    hits = pygame.sprite.spritecollide(jugador,meteoro_lista,True)
+    for hit in hits:
+        explosion_sound.play()
+        explosiones=ExplosionNave(hit.rect.center)
+        all_sprites.add(explosiones)
         jugador.vida-=33.9
+        meteoro=Meteorito()
+        all_sprites.add(meteoro)
+        meteoro_lista.add(meteoro)
         if jugador.vida<0:
             running=False
+
+    # if choque:
+    #     #explosion_sound.play() 
+    #     running=True
+    #     jugador.vida-=33.9
+    #     if jugador.vida<0:
+    #         running=False
         
      
     #screen.blit(background,[600,800])
