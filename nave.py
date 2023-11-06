@@ -163,19 +163,17 @@ class ExplosionNave(pygame.sprite.Sprite):
                 self.rect= self.image.get_rect()
                 self.rect.center=center
 
+def muestraGameOver():
+    dibujarTexto(screen,"GAME OVER",70,width//2,height//2)
+    pygame.display.flip()
+    espera=True
+    while espera:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                espera=False
     
-
-
-#cargar imagen de fondo
-#background=pygame.image.load("img/background.png") 
-
-# meteoro_imagenes=[]
-# meteoro_lista=["img/asteroids.png","img/asteroidPeque2.png"]
-# #almacenando todos los meteoros a la lista de meteoros
-# for img in meteoro_lista:
-#     meteoro_imagenes.append(pygame.image.load(img).convert())
-
-
 #cargar img explosiones
 #lista de explosiones
 explosion_anim=[]
@@ -211,8 +209,14 @@ for i in range(8):
     
 score=0
 pygame.mixer.music.play(loops=-1)
+#game over
+Game_over=False
 running=True
 while running:
+    if Game_over==True:
+        #screen.blit(black)
+        muestraGameOver()  
+        running=False     
     clock.tick(60)
     for event in pygame.event.get(): 
         if event.type==pygame.QUIT:
@@ -244,7 +248,7 @@ while running:
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
         if jugador.vida<0:
-            running=False
+            Game_over=True
 
     # if choque:
     #     #explosion_sound.play() 
@@ -259,6 +263,7 @@ while running:
     screen.fill(black)
     all_sprites.draw(screen)
     #marcador
+    dibujarTexto(screen,str("kills:"),25,width-450,10)
     dibujarTexto(screen,str(score),25,width//2,10)
     dibujarBarraVida(screen,5,5,jugador.vida)
     pygame.display.flip()
