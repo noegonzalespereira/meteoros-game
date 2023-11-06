@@ -10,8 +10,8 @@ white= (255, 255, 255)
 clok = pygame.time.Clock()
 
 # muetra las imagenes de la pantalla principal
-# fondo = pygame.image.load("fondoEspacio.jpg")
-# fondo = pygame.transform.scale(fondo, (800,600))
+fondo = pygame.image.load("fondoEspacio.jpg")
+fondo = pygame.transform.scale(fondo, (800,600))
 
 #cargar fuente en diccionario
 fuente1 = pygame.font.Font(None, 70)
@@ -47,7 +47,7 @@ while True:
 
     # muestra las imagenes a la pantalla principal
     screen.fill(black)
-    #screen.blit(fondo, (0,0))
+    screen.blit(fondo, (0,0))
     
 
 
