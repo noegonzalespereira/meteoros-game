@@ -250,7 +250,7 @@ while running:
         meteoro=Meteorito()
         all_sprites.add(meteoro)
         meteoro_lista.add(meteoro)
-        if jugador.vida<0:
+        if jugador.vida<=0:
             Game_over=True
 
     # if choque:
