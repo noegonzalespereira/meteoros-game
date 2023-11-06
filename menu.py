@@ -152,7 +152,7 @@ def abaout():
 
     
     
-    back = pygame.draw.rect(pantalla, [222,100,0], (250,350,85,40), 0)
+    back = pygame.draw.rect(pantalla, [222,100,0], (700,550,85,40), 0)
 
     about = True
     while about == True :
@@ -167,6 +167,8 @@ def abaout():
         
         screen.fill(black)
         #screen.blit(fondo,(0,0))
+        #muestra el boton
+        pygame.draw.rect(screen,[222,100,0],(700,550,85,40),0)
         # muuestra la lluvia aleatorio
         list_de_coordenadas= ()
         for j in coord_list:
