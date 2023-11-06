@@ -1,13 +1,10 @@
 import pygame, random
- 
-
-
 width=800
 height=600
 black=(0,0,0)
 white=(255,255,255)
 green=(0,255,0)
-blue = (0, 0, 255)
+blue=(0,0,255)
 pygame.init()
 pygame.mixer.init()
 
@@ -163,7 +160,10 @@ class ExplosionNave(pygame.sprite.Sprite):
                 self.rect= self.image.get_rect()
                 self.rect.center=center
 
+
+
 def muestraGameOver():
+    screen.fill(black)
     dibujarTexto(screen,"GAME OVER",70,width//2,height//2)
     pygame.display.flip()
     espera=True
@@ -173,7 +173,9 @@ def muestraGameOver():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 espera=False
-    
+
+
+
 #cargar img explosiones
 #lista de explosiones
 explosion_anim=[]
@@ -189,6 +191,7 @@ img=pygame.image.load("img/regularExplosion03.png").convert()
 img.set_colorkey(black)
 img_scale=pygame.transform.scale(img,(70,70))
 explosion_anim2.append(img_scale)
+
 
 #cargando sonidos 
 laser_sound=pygame.mixer.Sound("sound/laser.ogg")
@@ -257,8 +260,7 @@ while running:
     #     if jugador.vida<0:
     #         running=False
         
-     
-    #screen.blit(background,[600,800])
+    
     
     screen.fill(black)
     all_sprites.draw(screen)
